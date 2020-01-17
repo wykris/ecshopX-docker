@@ -1,0 +1,109 @@
+version: "3.3"
+
+networks:
+  webnet:
+
+services:
+##nginx proxy
+  espier-nginx-proxy:
+    image: nginx:stable-alpine
+    ports:
+      - "80:8080"
+      - "8084:8004"
+    links:
+      - espier-bloated-web
+      - phpmyadmin
+      # - ecshop-admin-build
+    volumes:
+      - "./config/nginx/:/etc/nginx/conf.d"
+      - "${CODE_DATA}/:/usr/share/nginx/html"
+    networks:
+      - webnet
+
+###espier-bloated-web
+  espier-bloated-web:
+    environment:
+      APP_ENV: dev
+      CONTAINER_ROLE: web
+    entrypoint: php-fpm
+    # replace username/repo:tag with your name and image details
+    image: "${PHP_COMPOSER_IMAGE}"
+    ports:
+      - "8085:8005" 
+    links:
+      - mysql
+      - neo4j
+      - redis
+    volumes:
+      - "./config/phpfpm/php-fpm.conf:/usr/local/etc/php-fpm.conf"
+      - "./config/phpfpm/php.ini:/usr/local/etc/php/php.ini"
+      #zl文件请自行修改当前目录下/config/phpfpm/docker-php-ext-swoole-compiler.ini中的swoole_license_files 不用重启，及时生效
+      - "./config/phpfpm/docker-php-ext-swoole-compiler.ini:/usr/local/etc/php/conf.d/docker-php-ext-swoole-compiler.ini"
+      - "${CODE_DATA}:/app"
+    networks:
+      - webnet
+
+  redis:
+    image: 'bitnami/redis:4.0.14-r61'
+    ports:
+      - '6379'
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PASSWORD=123456
+    volumes:
+      - ${STORAGE_PATH}/redis:/bitnami
+    networks:
+      - webnet
+
+  neo4j:
+    image: 'neo4j'
+    ports:
+      - '7474:7474'
+      - '7687:7687'
+
+    volumes:
+      - ${STORAGE_PATH}/neo4j:/data
+    networks:
+      - webnet
+
+  mysql:
+    image: mysql:5.7
+    hostname: mysql
+    ports:
+      - "8806:3306"
+    volumes:
+      - ${STORAGE_PATH}/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - webnet
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - "8004:80"
+    links:
+      - mysql
+    environment:
+      - PMA_HOST=mysql
+    networks:
+      - webnet    
+
+### 不同版本对应不同的node版本，推荐使用12，可以使用13
+  # ecshop-admin-build:
+  #   image: node:12-alpine
+  #   environment:
+  #     PRODUCT_MODEL: standard
+  #     IS_SAAS: "false"
+  #     PORT: 4000
+  #     BUILD_DIR: /usr/share/nginx/html/app
+  #     NPM_CACHE_DIR: /usr/share/nginx/node
+  #   entrypoint:
+  #     - sh 
+  #     - /usr/share/nginx/html/docker/build_dev.sh
+  #   volumes:
+  #     - "${CODE_DATA}/espier-shop:/usr/share/nginx/html"
+  #     - "${STORAGE_PATH}/node:/usr/share/nginx/node"
+  #   networks:
+  #     - webnet
+#- "./bloated/files/scheduler/crontabs/root:/var/spool/cron/crontabs/root"
