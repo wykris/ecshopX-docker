@@ -122,31 +122,6 @@ php ./artisan doctrine:migrations:migrate
 
 在访问环境前，请先确认管理端代码是否编译完成
 
-##  本地可以选择先编译好后，直接运行代码
-
-#代码编译过程
-进入前端代码所在路径
-cd /data/httpd/shopex/ecshopX/espier-shop/app
-npm install
-```
-请选择合适你的node 版本，经测试，有的是系统适合用node12 有的用node13，推荐使用node12
-```
-修改app/config/prod.env.js
-将BASE_API设置为你自己的url/api
-npm run build
-然后更改当前目录下/config/nginx/default.conf
-location / {
-    #「需要修改」 前端编译好的代码路径
-    root  /usr/share/nginx/html/espier-shop/app/dist/prod;
-    index  index.html index.htm;
-    try_files $uri $uri/ /index.html =404;
-}
-替换这段代码，如果想要做watch模式，请使用对应的配置 主要有yml 跟ng的配置，后缀名为bak
-
-你需要做的事情是修改.env文件，改成符合你自己身份气质的状态即可
-多项目并存，请修改ng配置，启用域名访问即可（记住要修改本地host文件，做dns映射）
-
-
 ```shell
 #查看管理端容器名称
 docker ps | grep ecshop-admin-build
@@ -167,6 +142,59 @@ ecshop-admin-build_1  | > Listening at http://localhost:4000
 ```shell
 docker start ecshopx-dev-docker_ecshop-admin-build_1
 ```
+
+##  本地可以选择先编译好后，直接运行代码(本地开发重点看这个)
+
+#代码编译过程
+
+进入前端代码所在路径
+
+```
+cd /data/httpd/shopex/ecshopX/espier-shop/app
+npm install
+```
+
+> 请选择合适你的node 版本，经测试，有的是系统适合用node12 有的用node13，推荐使用node12 可以本地安装，也可以自己安装docker，请自行选择
+
+修改 app/config/prod.env.js 将BASE_API设置为你自己的url/api
+```
+let args = process.argv
+let argv = {}
+for(let i=2; i<args.length; ++i){
+  let cur = args[i]
+  let arg = cur.split('=')
+  argv[arg[0]] = `'${arg[1]}'`
+}
+
+module.exports = {
+  NODE_ENV: '"production"',
+  IS_SAAS: '"true"',
+  PRODUCT_MODEL: '"standard"',
+  BASE_API: '"api"',
+  WXAUTHCALL_Url: '"api"',
+  PREFIXES: '""',
+  WXIMG_URL: '""',
+}
+```
+然后请初始化
+```
+npm run build
+```
+然后更改当前目录下/config/nginx/default.conf
+```shell
+location / {
+    #「需要修改」 前端编译好的代码路径
+    root  /usr/share/nginx/html/espier-shop/app/dist/prod;
+    index  index.html index.htm;
+    try_files $uri $uri/ /index.html =404;
+}
+```
+
+替换这段代码，如果想要做watch模式，请使用对应的配置 主要有yml 跟ng的配置，后缀名为bak
+
+你需要做的事情是修改.env文件，改成符合你自己身份气质的状态即可
+
+多项目并存，请修改ng配置，启用域名访问即可（记住要修改本地host文件，做dns映射）
 
 在完成以上几步之后，就可以访问开发环境了，具体访问地址如下：
 
