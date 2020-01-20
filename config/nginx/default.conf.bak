@@ -2,8 +2,7 @@ server {
 
     listen 8080;
 
-    #因为冲突，如果选用watch 模式 请自行修改为 _
-    server_name localhost;
+    server_name _;
 
     location /api/ {
         access_log /var/log/nginx/espier-bloated.log;

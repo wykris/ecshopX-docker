@@ -8,8 +8,9 @@ services:
   espier-nginx-proxy:
     image: nginx:stable-alpine
     ports:
+      #按照需要修改你的端口  自己的端口：docker端口 请只改 自己的端口
       - "80:8080"
-      - "8084:8004"
+      #- "8084:8004"
     links:
       - espier-bloated-web
       - phpmyadmin
@@ -97,10 +98,10 @@ services:
   #     IS_SAAS: "false"
   #     PORT: 4000
   #     BUILD_DIR: /usr/share/nginx/html/app
-  #     NPM_CACHE_DIR: /usr/share/nginx/node
   #   entrypoint:
-  #     - sh 
-  #     - /usr/share/nginx/html/docker/build_dev.sh
+  #     - sh
+  #     #此处的编译脚本请按照实际项目填写 /usr/share/nginx/html 这是映射目录，不要动，改后边的 直接watch 不适合一个docker-composer满足不同项目，请自行更改composer文件
+  #     - /usr/share/nginx/html/espier/docker/build_dev.sh
   #   volumes:
   #     - "${CODE_DATA}/espier-shop:/usr/share/nginx/html"
   #     - "${STORAGE_PATH}/node:/usr/share/nginx/node"
