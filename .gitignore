@@ -4,3 +4,6 @@
 \.#*
 \#*
 data
+!config/nginx/default.conf
+!config/nginx/default.conf.bak
+!config/nginx/demo.conf
