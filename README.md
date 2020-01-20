@@ -143,9 +143,8 @@ ecshop-admin-build_1  | > Listening at http://localhost:4000
 docker start ecshopx-dev-docker_ecshop-admin-build_1
 ```
 
-##  本地可以选择先编译好后，直接运行代码(本地开发重点看这个)
-
-#代码编译过程
+##  `本地可以选择先编译好后，直接运行代码(本地开发重点看这个)`
+#### 代码编译过程
 
 进入前端代码所在路径
 
@@ -195,6 +194,13 @@ location / {
 你需要做的事情是修改.env文件，改成符合你自己身份气质的状态即可
 
 多项目并存，请修改ng配置，启用域名访问即可（记住要修改本地host文件，做dns映射）
+
+## `总结一下`
+
+`A:修改.env文件 改成你自己的目录  `
+
+`B:修改config/nginx/default.conf或者自行添加自定义域名conf（参照lacoste.conf），按照{需要修改}A B C 三步修改完`
+
 
 在完成以上几步之后，就可以访问开发环境了，具体访问地址如下：
 
