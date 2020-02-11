@@ -47,7 +47,7 @@ services:
   redis:
     image: 'bitnami/redis:4.0.14-r61'
     ports:
-      - '6379'
+      - '63790:6379'
     environment:
       - REDIS_REPLICATION_MODE=master
       - REDIS_PASSWORD=123456
@@ -71,7 +71,7 @@ services:
     image: mysql:5.7
     hostname: mysql
     ports:
-      - "8806:3306"
+      - "3306:3306"
     volumes:
       - ${STORAGE_PATH}/mysql:/var/lib/mysql
     environment:
